@@ -25,7 +25,9 @@ var addGemToolTip = function(){
   } else {
     viewingGemfile = true
   }
-  var matches = $("span:contains('gem')")
+  var matches = $("span:contains('gem')").filter(function(){
+    return $(this).text() == "gem";
+  });
   for (i=0; i < matches.length; i++){
     function getGemName(){
       return $(matches[i]).siblings("span").first().text().replace(/('|")/g, "")
