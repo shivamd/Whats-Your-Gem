@@ -1,4 +1,5 @@
 $(document).ready(function(){
+  viewingGemfile = false
   if (isUserViewingGemfile()){
     addGemToolTip();
   } 
@@ -6,6 +7,8 @@ $(document).ready(function(){
     setInterval(function(){
       if (isUserViewingGemfile()){
         addGemToolTip();
+      } else {
+        viewingGemfile = false;
       }
     },
     3000);
@@ -17,6 +20,11 @@ var isUserViewingGemfile = function(){
 }
 
 var addGemToolTip = function(){
+  if (viewingGemfile){
+    return false
+  } else {
+    viewingGemfile = true
+  }
   var matches = $("span:contains('gem')")
   for (i=0; i < matches.length; i++){
     function getGemName(){
