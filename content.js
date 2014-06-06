@@ -9,7 +9,7 @@ var markupForAnnotationContainer = function($selector, gemName){
     position: "absolute",
     top: "-60px",
     "margin-left": "200px",
-    display: "hidden",
+    display: "none",
     cursor: "pointer",
     color: "white",
     "overflow-wrap": "break-word",
@@ -19,6 +19,17 @@ var markupForAnnotationContainer = function($selector, gemName){
     "padding": "0 4px"
   })
 }
+var hoverEventForGemContainer = function($container, gemName){
+  $container.on({
+    mouseenter: function(){
+      $("#"+gemName).css("display", "block")
+    },
+
+    mouseleave: function(){
+      $("#"+gemName).css("display", "none")
+    }
+  });
+}
 var addGemToolTip = function(){
   var matches = $("span:contains('gem')")
   for (i=0; i < matches.length; i++){
@@ -27,6 +38,7 @@ var addGemToolTip = function(){
     }
     var gemName = getGemName();
     markupForAnnotationContainer($(matches[i]), gemName);
+    hoverEventForGemContainer($(matches[i]).parent(), gemName)
   }
 };
 var isUserViewingGemfile = function(){
