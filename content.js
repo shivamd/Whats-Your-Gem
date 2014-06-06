@@ -80,7 +80,9 @@ var hoverEventForGemContainer = function($container, gemName){
   $container.on({
     mouseenter: function(){
       $("#"+gemName).css("display", "block")
-      getGemInfo($container, gemName);
+      if ($("#"+gemName).children().length == 0) {
+        getGemInfo($container, gemName);
+      }
     },
 
     mouseleave: function(){
