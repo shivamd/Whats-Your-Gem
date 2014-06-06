@@ -107,7 +107,8 @@ var isUserViewingGemfile = function(){
 $(document).ready(function(){
   if (isUserViewingGemfile()){
     addGemToolTip();
-  } else if (location.origin.match(/github/)){
+  } 
+  if (location.origin.match(/github/)){
     setInterval(function(){
       if (isUserViewingGemfile()){
         addGemToolTip();
