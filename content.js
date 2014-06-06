@@ -1,11 +1,32 @@
+var markupForAnnotationContainer = function($selector, gemName){
+  $selector.parent().append("<div id='"+gemName+"'></div>")
+  $selector.parent().css("position", "relative")
+  $("#"+gemName).css({
+    "min-height": "100px",
+    width: "250px",
+    color: "white",
+    background: "rgba(0,0,0,0.8)",
+    position: "absolute",
+    top: "-60px",
+    "margin-left": "200px",
+    display: "hidden",
+    cursor: "pointer",
+    color: "white",
+    "overflow-wrap": "break-word",
+    "z-index": "2",
+    "border-radius": "3px",
+    "font-size": "10px",
+    "padding": "0 4px"
+  })
+}
 var addGemToolTip = function(){
   var matches = $("span:contains('gem')")
   for (i=0; i < matches.length; i++){
     function getGemName(){
       return $(matches[i]).siblings("span").first().text().replace(/('|")/g, "")
     }
-    var gemName = getGemName()
-    console.log(gemName);
+    var gemName = getGemName();
+    markupForAnnotationContainer($(matches[i]), gemName);
   }
 };
 var isUserViewingGemfile = function(){
