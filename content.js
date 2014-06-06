@@ -19,10 +19,24 @@ var markupForAnnotationContainer = function($selector, gemName){
     "padding": "0 4px"
   })
 }
+var getGemInfo = function($container, gemName){
+  $.ajax({
+    url: "https://rubygems.org/api/v1/gems/"+gemName+".json",
+    type: "GET",
+  }).done(function(data){
+    var gemDescription = data.info
+    var projectURL = data.homepage_uri
+    console.log(gemDescription);
+    console.log(projectURL);
+  }).error(function(){
+    console.log("error");
+  })
+}
 var hoverEventForGemContainer = function($container, gemName){
   $container.on({
     mouseenter: function(){
       $("#"+gemName).css("display", "block")
+      getGemInfo($container, gemName);
     },
 
     mouseleave: function(){
