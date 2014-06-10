@@ -1,4 +1,4 @@
-var setStyleForAnnotationContainer = function(gemName){
+var setStyleForAnnotationContainer = function(gemName, fileName){
   $("#"+gemName).css({
     "min-height": "100px",
     width: "250px",
@@ -16,6 +16,11 @@ var setStyleForAnnotationContainer = function(gemName){
     "font-size": "10px",
     "padding": "0 4px"
   })
+  if (fileName.match(/gemspec/)){
+    $("#" +gemName).css({
+      left: "170px"
+    })
+  }
 }
 var setStyles = function(){
   setStyleForInfoContainer();

@@ -85,7 +85,7 @@ var gemAnnotater = {
   markupForAnnotationContainer: function($selector, gemName){
     $selector.parent().append("<div id='"+gemName+"'></div>")
     $selector.parent().css("position", "relative")
-    setStyleForAnnotationContainer(gemName)
+    setStyleForAnnotationContainer(gemName, window.location.pathname)
   },
   hoverEventForGemContainer: function($container, gemName){
     $container.on({
