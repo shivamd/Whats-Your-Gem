@@ -16,7 +16,7 @@ $(document).ready(function(){
 });
 
 var isUserViewingGemfile = function(){
-  return !!(location.origin.match(/github/) && location.pathname.match(/Gemfile/));
+  return !!(location.origin.match(/github/) && ( location.pathname.match(/Gemfile/)) || location.pathname.match(/gemspec/) );
 }
 
 var addGemToolTip = function(){
@@ -25,16 +25,31 @@ var addGemToolTip = function(){
   } else {
     viewingGemfile = true
   }
-  var matches = $("span:contains('gem')").filter(function(){
-    return $(this).text() == "gem";
-  });
-  for (i=0; i < matches.length; i++){
-    function getGemName(){
-      return $(matches[i]).siblings("span").first().text().replace(/('|")/g, "")
+  if (location.pathname.match(/Gemfile/)){
+    var matches = $("span:contains('gem')").filter(function(){
+      return $(this).text() == "gem";
+    });
+    for (i=0; i < matches.length; i++){
+      function getGemName(){
+        return $(matches[i]).siblings("span").first().text().replace(/('|")/g, "")
+      }
+      var gemName = getGemName();
+      markupForAnnotationContainer($(matches[i]), gemName);
+      hoverEventForGemContainer($(matches[i]).parent(), gemName)
     }
-    var gemName = getGemName();
-    markupForAnnotationContainer($(matches[i]), gemName);
-    hoverEventForGemContainer($(matches[i]).parent(), gemName)
+  } else {
+    var matches = $("span:contains('dependency')").next();
+    for(i=0; i < matches.length; i ++){
+      function getDependencyName(){
+        return $(matches[i]).text().replace(/('|")/g, "")
+      }
+      var dependencyName = getDependencyName();
+      markupForAnnotationContainer($(matches[i]), dependencyName);
+      hoverEventForGemContainer($(matches[i]).parent(), dependencyName)
+      $("#"+dependencyName).css({
+        left: "170px"
+      })
+    }
   }
 };
 
