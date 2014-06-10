@@ -1,94 +1,10 @@
+function inPath(pathName){
+  return !!location.href.match(pathName)
+}
+
 $(document).ready(function(){
-  viewingGemfile = false
-  if (isUserViewingGemfile()){
-    addGemToolTip();
-  } 
-  if (location.origin.match(/github/)){
-    setInterval(function(){
-      if (isUserViewingGemfile()){
-        addGemToolTip();
-      } else {
-        viewingGemfile = false;
-      }
-    },
-    3000);
-  }
+  gemAnnotater.init();
 });
-
-var isUserViewingGemfile = function(){
-  return !!(location.origin.match(/github/) && ( location.pathname.match(/Gemfile/)) || location.pathname.match(/gemspec/) );
-}
-
-var addGemToolTip = function(){
-  if (viewingGemfile){
-    return false
-  } else {
-    viewingGemfile = true
-  }
-  if (location.pathname.match(/Gemfile/)){
-    var matches = $("span:contains('gem')").filter(function(){
-      return $(this).text() == "gem";
-    });
-    for (i=0; i < matches.length; i++){
-      function getGemName(){
-        return $(matches[i]).siblings("span").first().text().replace(/('|")/g, "")
-      }
-      var gemName = getGemName();
-      markupForAnnotationContainer($(matches[i]), gemName);
-      hoverEventForGemContainer($(matches[i]).parent(), gemName)
-    }
-  } else {
-    var matches = $("span:contains('dependency')").next();
-    for(i=0; i < matches.length; i ++){
-      function getDependencyName(){
-        return $(matches[i]).text().replace(/('|")/g, "")
-      }
-      var dependencyName = getDependencyName();
-      markupForAnnotationContainer($(matches[i]), dependencyName);
-      hoverEventForGemContainer($(matches[i]).parent(), dependencyName)
-      $("#"+dependencyName).css({
-        left: "170px"
-      })
-    }
-  }
-};
-
-var markupForAnnotationContainer = function($selector, gemName){
-  $selector.parent().append("<div id='"+gemName+"'></div>")
-  $selector.parent().css("position", "relative")
-  $("#"+gemName).css({
-    "min-height": "100px",
-    width: "250px",
-    color: "white",
-    background: "rgba(0,0,0,0.8)",
-    position: "absolute",
-    top: "-60px",
-    "margin-left": "200px",
-    display: "none",
-    cursor: "pointer",
-    color: "white",
-    "overflow-wrap": "break-word",
-    "z-index": "2",
-    "border-radius": "3px",
-    "font-size": "10px",
-    "padding": "0 4px"
-  })
-}
-
-var hoverEventForGemContainer = function($container, gemName){
-  $container.on({
-    mouseenter: function(){
-      $("#"+gemName).css("display", "block")
-      if ($("#"+gemName).children().length == 0) {
-        getGemInfo($container, gemName);
-      }
-    },
-
-    mouseleave: function(){
-      $("#"+gemName).css("display", "none")
-    }
-  });
-}
 
 var getGemInfo = function($container, gemName){
   $.ajax({
@@ -103,47 +19,93 @@ var getGemInfo = function($container, gemName){
   })
 }
 
+var gemAnnotater = {
+  viewingGemfile: false,
+  init: function(){
+    if (this.isViewingGemfile()){
+      this.addGemToolTip();
+    }
+    this.pageListner()
+  },
+
+  pageListner: function(){
+    if (inPath(/github/)){
+      $this = this
+      setInterval(function(){
+        if ($this.isViewingGemfile()){
+          $this.addGemToolTip();
+        } else {
+          $this.viewingGemfile = false;
+        }
+      },
+      3000);
+    }
+  },
+  isViewingGemfile: function(){
+    return !!(inPath(/github/) && ( inPath(/Gemfile/)) || inPath(/gemspec/) );
+  },
+  addGemToolTip: function(){
+    if (!this.updateGemFileViewingStatus()) return;
+    if (inPath(/Gemfile/)){
+      var matches = this.gemFileMatches();
+      for (i=0; i < matches.length; i++){
+        this.annotateGem($(matches[i]).siblings("span").first())
+      }
+    } else {
+      var matches = this.gemSpecMatches();
+      for (i=0; i < matches.length; i++){
+        this.annotateGem($(matches[i]))
+      }
+    }
+  },
+  updateGemFileViewingStatus: function(){
+    if (this.viewingGemfile){
+      return false
+    } else {
+      this.viewingGemfile = true;
+      return true
+    }
+  },
+  gemFileMatches: function(){
+    return $("span:contains('gem')").filter(function(){
+      return $(this).text() == "gem";
+    });
+  },
+  gemSpecMatches: function(){
+    return $("span:contains('dependency')").next();
+  },
+  annotateGem: function($match){
+    function getGemName(){
+      return $match.text().replace(/('|")/g, "")
+    }
+    var gemName = getGemName();
+    this.markupForAnnotationContainer($match, gemName);
+    this.hoverEventForGemContainer($match.parent(), gemName)
+  },
+  markupForAnnotationContainer: function($selector, gemName){
+    $selector.parent().append("<div id='"+gemName+"'></div>")
+    $selector.parent().css("position", "relative")
+    setStyleForAnnotationContainer(gemName)
+  },
+  hoverEventForGemContainer: function($container, gemName){
+    $container.on({
+      mouseenter: function(){
+        $("#"+gemName).css("display", "block")
+        if ($("#"+gemName).children().length == 0) {
+          getGemInfo($container, gemName);
+        }
+      },
+
+      mouseleave: function(){
+        $("#"+gemName).css("display", "none")
+      }
+    });
+  }
+}
+
 var addMarkupForGemInformation = function(gemName, gemDescription, projectURL){
   var gemInformationMarkup = "<p class='info-container'><a class='gem-link' target='_blank' href='"+projectURL+"'><span class='arrow-left'></span><span class='gem-info'>"+gemDescription.substring(0,150)+"</span> <br/><span class='project-link'>Project Link</span></a></p>"
   $("#"+gemName).html(gemInformationMarkup);
   setStyles()
 };
-
-var setStyles = function(){
-  setStyleForInfoContainer();
-  setStyleForLinkToProject()
-  setStyleForArrow();
-}
-
-var setStyleForInfoContainer = function(){
-  $(".info-container").css({
-    "padding": "0px 4px",
-    "margin-top": "5px",
-    "text-align": "justify",
-    "white-space": "pre-wrap"
-  })
-}
-
-var setStyleForLinkToProject = function(){
-  $(".gem-link").css({
-    color: "white",
-    "text-decoration": "none",
-  })
-  $(".project-link").css({
-    "color": "#4183c4"
-  })
-}
-
-var setStyleForArrow = function(){
-  $(".arrow-left").css({
-    "position": "absolute",
-    "width": "0",
-    "height": "0",
-    "border-top": "20px solid transparent",
-    "border-right": "20px solid rgba(0,0,0,0.8)",
-    "border-bottom": "20px solid transparent",
-    left: "-20px",
-    top: "47px"
-  })
-}
 
