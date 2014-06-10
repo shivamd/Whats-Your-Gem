@@ -11,8 +11,10 @@ The extension is a script that runs in the background when you visit [Github][2]
 
 ## Screenshots
 ![Screenshot_1](http://imgur.com/yNUj769.png "Screenshot_1 of extension in action")
+
 ![Screenshot_2](http://imgur.com/s0iyiMr.png "Screenshot_2 of extension in action")
 
+![Screenshot_3](http://imgur.com/oYO9mwN.png "Screenshot_3 of extension in action")
 
 
 [1]: https://chrome.google.com/webstore/detail/whats-your-gem/eklboffmplahheojdpodeneekjffagfj
