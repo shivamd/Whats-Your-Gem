@@ -25,7 +25,8 @@ var gemAnnotater = {
     if (this.isViewingGemfile()){
       this.addGemToolTip();
     }
-    this.pageListner()
+    this.pageListner();
+    this.clickEventForAnnotationContainer();
   },
 
   pageListner: function(){
@@ -40,6 +41,14 @@ var gemAnnotater = {
       },
       3000);
     }
+  },
+  clickEventForAnnotationContainer: function(){
+    $("body").on("click", ".annotation-container", function(e){
+      $(this).find(".project-link").first().click()
+    })
+    $("body").on("click", ".project-link", function(e){
+      e.stopPropagation();
+    });
   },
   isViewingGemfile: function(){
     return !!(inPath(/github/) && ( inPath(/Gemfile/)) || inPath(/gemspec/) );
@@ -80,10 +89,10 @@ var gemAnnotater = {
     }
     var gemName = getGemName();
     this.markupForAnnotationContainer($match, gemName);
-    this.hoverEventForGemContainer($match.parent(), gemName)
+    this.hoverEventForGemContainer($match.parent(), gemName);
   },
   markupForAnnotationContainer: function($selector, gemName){
-    $selector.parent().append("<div id='"+gemName+"'></div>")
+    $selector.parent().append("<div class='annotation-container' id='"+gemName+"'></div>")
     $selector.parent().css("position", "relative")
     setStyleForAnnotationContainer(gemName, window.location.pathname)
   },
